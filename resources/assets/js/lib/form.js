@@ -1,12 +1,3 @@
-/**
- * This file has been written (read almost copied)
- * from the greatest learning resource for quality
- * code for Laravel, Lumen and Vue (and many other).
- *
- * If you still do not know what's all about, it's
- * Laracasts (https://laracasts.com)
- */
-
 import i18n from './i18n';
 
 class Form {
@@ -17,20 +8,16 @@ class Form {
         this._errors = {};
     }
 
-    // Easily get the data from the form, without worrying about
-    // other members
     get data() {
         let data = Object.assign({}, this);
         delete data._errors;
         return data;
     }
 
-    // Returns true if there is an error associated with the field name
     has(field) {
         return (this._errors[field] !== undefined);
     }
-
-    // Gets the error text
+    
     error(field) {
         if (!this._errors[field]) {
             return null;
@@ -53,7 +40,6 @@ class Form {
 
     push(field, errorMessage) {
         this._errors[field] = errorMessage;
-        // trigger the Vue watcher
         this._errors = Object.assign({}, this._errors);
     }
 

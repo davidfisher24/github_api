@@ -39,7 +39,7 @@
                             </div>
                             <div class="content">
                                 <p class="has-text-centered">
-                                    <router-link to="/login">{{ $t('login') }}</router-link>
+                                    <router-link to="/">{{ $t('login') }}</router-link>
                                 </p>
                             </div>
                         </div>
@@ -82,13 +82,11 @@
         methods: {
             doRegister() {
                 let data = this.form.data;
-                this.$http.post('/register', data).then(response => {
+                this.$http.post('/api/register', data).then(response => {
                     prefs.token = response.data.token;
                     setTimeout(() => {
-                        // we will reboot Vue with the new token and everything.
                         this.$destroy();
                         let href = window.location.href;
-                        // Need to change this if the router iw not using hash method
                         href = href.replace(window.location.hash, '');
                         window.location.replace(href);
                     }, 10);

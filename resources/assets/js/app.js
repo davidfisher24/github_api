@@ -22,6 +22,7 @@ const init = () => setTimeout(() => {
         mounted() {
             this.bus.$on('server-auth', (err) => {
                 this.bus.$emit('notify', {theme:'is-danger', text: this.$t('login_expired')});
+                prefs.user = null;
                 prefs.token = null;
                 this.$store.commit('logout');
                 if (this.$route.meta.public !== true) {
@@ -44,17 +45,10 @@ const init = () => setTimeout(() => {
 
 if (prefs.token) {
     store.commit('token', prefs.token);
-    http.get('/profile')
-        .then(response => {
-            store.commit('user', response.data.user);
-            init();
-        })
-        .catch (() => {
-            prefs.token = null;
-            store.commit('logout');
-            init();
-        })
-    ;
-} else {
-    init();
+} 
+
+if (prefs.user) {
+    store.commit('user', prefs.user);
 }
+
+init()

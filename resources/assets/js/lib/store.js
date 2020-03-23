@@ -28,7 +28,7 @@ const getters = {
         return state.token;
     },
     logged: state => {
-        return (state.user !== null && state.token !== null);
+        return state.token !== null;
     },
 };
 

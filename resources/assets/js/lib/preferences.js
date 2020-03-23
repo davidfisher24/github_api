@@ -1,13 +1,7 @@
-/**
- * This file stores the preferences in the local/session storage,
- * so at page (force) refresh there is no logout.
- *
- */
-
-// a private collection
 const storage = {
     lang: '_rgl',
     token: '_rgk',
+    user: '_ruk',
     load(key, val, session) {
         const stored = (session ? window.sessionStorage.getItem(key) : window.localStorage.getItem(key));
         if (stored === null || stored === undefined) {
@@ -17,13 +11,10 @@ const storage = {
         return stored;
     },
     save(key, val, session) {
-        let s = (session ? window.sessionStorage : window.localStorage);
-        if (val === null) {
-            s.removeItem(key);
-        } else {
-            s.setItem(key, val);
-        }
-
+        console.log(key)
+        console.log(val)
+        window.localStorage.setItem(key,val)
+        window.sessionStorage.setItem(key,val)
     }
 };
 
@@ -31,6 +22,7 @@ class Preferences {
     constructor() {
         this._lang = storage.load(storage.lang, 'en', false);
         this._token = storage.load(storage.token, null, true);
+        this._user = storage.load(storage.user, null, true);
     }
 
     get lang() {
@@ -49,6 +41,15 @@ class Preferences {
     set token(value) {
         storage.save(storage.token, value, true);
         this._token = value;
+    }
+
+    get user() {
+        return JSON.parse(this._user);
+    }
+
+    set user(value) {
+        storage.save(storage.user, value, true);
+        this._user = JSON.parse(value);
     }
 }
 

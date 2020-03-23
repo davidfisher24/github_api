@@ -7,45 +7,24 @@ import store from './store';
 const routes = [
     {
         path: '/',
+        name: 'login',
         exact: true,
-        component: require('../pages/Welcome'),
+        component: require('../pages/Login'),
         meta: { login: false, },
     },
     {
-        path: '/login',
-        exact: true,
-        component: require('./../pages/Login'),
-        meta: { login: false, }
-    },
-    {
         path: '/register',
+        name: 'register',
         exact: true,
         component: require('./../pages/Register'),
         meta: { login: false, }
     },
     {
         path: '/dashboard',
+        name: 'dashboard',
         exact: true,
         component: require('../pages/Dashboard'),
         meta: { login: true, }
-    },
-    {
-        path: '/profile', exact: true, component: require('./../pages/Profile'),
-        meta: { login: true, },
-        children: [
-            {
-                path: '',
-                exact: true,
-                component: require('./../pages/ProfileAccount'),
-                meta: { login: true, }
-            },
-            {
-                path: 'security',
-                exact: true,
-                component: require('./../pages/ProfileSecurity'),
-                meta: { login: true, }
-            },
-        ]
     },
 ];
 

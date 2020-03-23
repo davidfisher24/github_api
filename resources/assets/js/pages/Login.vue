@@ -54,12 +54,13 @@
                 let data = this.form.data;
                 this.$http.post('/api/login', data).then(response => {
                     prefs.token = response.data.token;
+                    prefs.user = JSON.stringify(response.data.user);
+                    this.$store.commit('user', response.data.user);
+                    this.$store.commit('token', response.data.token);
                     setTimeout(() => {
-                        // we will reboot Vue with the new token and everything.
                         this.$destroy();
                         let href = window.location.href;
-                        // Need to change this if the router if not using hash method
-                        href = href.replace(window.location.hash, '');
+                        href = href.replace(window.location.hash, '#/dashboard');
                         window.location.replace(href);
                     }, 10);
                 }).catch(err => {
