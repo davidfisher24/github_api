@@ -1,10 +1,15 @@
 # Lumen PHP Framework
 
 - composer install
-- configure db, app_key, and jwt_secret in .env
+- copy, env configure db, app_key, and jwt_secret in .env
 - create db in mysql
  - openssl rand -base64 24 to create keys
  - php artisan migrate
+
+- npm install
+- npm run prod
+
+- php -S localhost:8000 -t public
 
 - Test vendor/bin/phpunit 
 

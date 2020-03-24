@@ -221,63 +221,48 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
-            timeout: null,
-            page: 0,
+            loading: false,
+            page: 1,
             page_size: "25",
             pages: 0,
             query: '',
-            items: []
+            items: [],
+            page_options: []
         };
     },
 
 
-    computed: {
-        pageOptions: function (_pageOptions) {
-            function pageOptions() {
-                return _pageOptions.apply(this, arguments);
-            }
-
-            pageOptions.toString = function () {
-                return _pageOptions.toString();
-            };
-
-            return pageOptions;
-        }(function () {
-            var pages = [];
-            var min = Math.min(1, this.page - 1);
-            alert(pageOptions);
-            alert(min);
-            var max = Math.max(this.page + 5, this.pages);
-            alert(max);
-            for (var i = min; i <= max; i++) {
-                pages.push(i);
-            }
-            return pages;
-        })
-    },
-
     methods: {
-        search: function search(e) {
-            var _this = this;
-
-            clearTimeout(this.timeout);
-            var self = this;
-            this.timeout = setTimeout(function () {
-                _this.query = e.target.value;
-                _this.requestData();
-            }, 1000);
-        },
         openExternalLink: function openExternalLink(item) {
             window.open(item.url, "_blank");
         },
         requestData: function requestData() {
-            var _this2 = this;
+            var _this = this;
 
             var url = "/api/github?query=" + this.query + "&page=" + this.page + "&per_page=" + this.page_size;
+
+            this.loading = true;
 
             this.$http.get(url).then(function (response) {
                 var _response$data = response.data,
@@ -286,15 +271,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     total = _response$data.total,
                     page_size = _response$data.page_size;
 
-                _this2.items = items;
-                _this2.page = page;
-                _this2.pages = Math.floor(total / page_size);
+                _this.items = items;
+                _this.page = page;
+                _this.pages = Math.floor(total / page_size);
+                _this.calculatePageOptions();
+                _this.loading = false;
             }).catch(function (err) {
-                _this2.isSaving = false;
-                if (!_this2.form.parse(err)) {
-                    _this2.bus.$emit('srv-err', err);
+                _this.isSaving = false;
+                if (!_this.form.parse(err)) {
+                    _this.bus.$emit('srv-err', err);
                 }
+                _this.loading = false;
             });
+        },
+        calculatePageOptions: function calculatePageOptions() {
+            var pages = [];
+            var min = Math.max(1, parseInt(this.page) - 1);
+            var max = Math.min(parseInt(this.page) + 5, this.pages);
+            for (var i = min; i <= max; i++) {
+                pages.push(i);
+            }
+            this.page_options = pages;
         }
     }
 });
@@ -718,63 +715,112 @@ var render = function() {
       1
     ),
     _vm._v(" "),
-    _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "md-form mt-0" }, [
-        _c("input", {
-          staticClass: "form-control",
-          attrs: {
-            type: "text",
-            placeholder: "Search",
-            "aria-label": "Search"
-          },
-          on: { keyup: _vm.search }
-        }),
-        _vm._v("\n          Page Size:\n          "),
-        _c(
-          "select",
-          {
+    _c("div", { staticClass: "container is-fluid" }, [
+      _c("div", { staticClass: "field has-addons" }, [
+        _c("div", { staticClass: "control" }, [
+          _c("input", {
             directives: [
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.page_size,
-                expression: "page_size"
+                value: _vm.query,
+                expression: "query"
               }
             ],
+            staticClass: "input",
+            attrs: {
+              type: "text",
+              placeholder: "Search",
+              "aria-label": "Search"
+            },
+            domProps: { value: _vm.query },
             on: {
-              change: [
-                function($event) {
-                  var $$selectedVal = Array.prototype.filter
-                    .call($event.target.options, function(o) {
-                      return o.selected
-                    })
-                    .map(function(o) {
-                      var val = "_value" in o ? o._value : o.value
-                      return val
-                    })
-                  _vm.page_size = $event.target.multiple
-                    ? $$selectedVal
-                    : $$selectedVal[0]
-                },
-                function($event) {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.query = $event.target.value
+              }
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "control" }, [
+          _c(
+            "a",
+            {
+              staticClass: "button is-info",
+              on: {
+                click: function($event) {
                   return _vm.requestData()
                 }
+              }
+            },
+            [_vm._v("\n              Search\n            ")]
+          )
+        ]),
+        _vm._v(" "),
+        _c("span", { staticClass: "tag" }, [
+          _vm._v("\n              Page Size\n          ")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "control is-expanded" }, [
+          _c("div", { staticClass: "select" }, [
+            _c(
+              "select",
+              {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.page_size,
+                    expression: "page_size"
+                  }
+                ],
+                on: {
+                  change: [
+                    function($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function(o) {
+                          return o.selected
+                        })
+                        .map(function(o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.page_size = $event.target.multiple
+                        ? $$selectedVal
+                        : $$selectedVal[0]
+                    },
+                    function($event) {
+                      return _vm.requestData()
+                    }
+                  ]
+                }
+              },
+              [
+                _c("option", { attrs: { value: "10" } }, [_vm._v("10")]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "25" } }, [_vm._v("25")]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "50" } }, [_vm._v("50")]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "100" } }, [_vm._v("100")])
               ]
-            }
-          },
-          [
-            _c("option", { attrs: { value: "10" } }, [_vm._v("10")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "25" } }, [_vm._v("25")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "50" } }, [_vm._v("50")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "100" } }, [_vm._v("100")])
-          ]
-        )
+            )
+          ])
+        ])
       ]),
       _vm._v(" "),
-      _c("table", { staticClass: "table table-sm table-dark" }, [
+      _vm.loading
+        ? _c(
+            "progress",
+            { staticClass: "progress is-large is-info", attrs: { max: "100" } },
+            [_vm._v("60%")]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _c("table", { staticClass: "table is-striped is-fullwidth" }, [
         _vm._m(0),
         _vm._v(" "),
         _c(
@@ -792,7 +838,7 @@ var render = function() {
               _c(
                 "button",
                 {
-                  staticClass: "btn btn-primary",
+                  staticClass: "button is-primary",
                   attrs: { role: "button" },
                   on: {
                     click: function($event) {
@@ -816,7 +862,7 @@ var render = function() {
                   ? _c(
                       "button",
                       {
-                        staticClass: "page-link",
+                        staticClass: "button is-white",
                         attrs: { type: "button" },
                         on: {
                           click: function($event) {
@@ -833,12 +879,18 @@ var render = function() {
               _c(
                 "li",
                 { staticClass: "page-item" },
-                _vm._l(_vm.pageOptions, function(pageNumber) {
+                _vm._l(_vm.page_options, function(pageNumber) {
                   return _c(
                     "button",
                     {
-                      staticClass: "page-link",
-                      attrs: { type: "button" },
+                      class: [
+                        "button",
+                        _vm.page == pageNumber ? "is-dark" : "is-white"
+                      ],
+                      attrs: {
+                        type: "button",
+                        disabled: _vm.page == pageNumber
+                      },
                       on: {
                         click: function($event) {
                           _vm.page = pageNumber
@@ -853,11 +905,11 @@ var render = function() {
               ),
               _vm._v(" "),
               _c("li", { staticClass: "page-item" }, [
-                _vm.page < _vm.pages.length
+                _vm.pages && _vm.page < _vm.pages
                   ? _c(
                       "button",
                       {
-                        staticClass: "page-link",
+                        staticClass: "button is-white",
                         attrs: { type: "button" },
                         on: {
                           click: function($event) {
